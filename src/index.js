@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import axios from 'axios';
 import * as firebase from "firebase";
 
 
@@ -16,7 +17,7 @@ var firebaseConfig = {
     appId: "1:714258084854:web:16d8ced393612b30"
   };
 
-firebase.initializeApp(firebaseConfig)
+firebase.initializeApp(firebaseConfig);
 
 // Code to insert into firebase
 // ============================================
@@ -87,15 +88,21 @@ firebase.initializeApp(firebaseConfig)
 
 
 
-// Actual Code Implementation
+// Actual Code Implementation to check website visit by IP Address
 // =====================================================
+
+    //Get the IP address of the client
+
+    // axios.get('http://api.ipstack.com/check?access_key=6ac02503c0ecd2aea73e20ec478a8d80')
+    // .then((res) => console.log(res.data.ip))
+    // .catch(err => console.log(err));
 
     const IP = "169.191.184.17"
 
-    // To check if IP exist
+    //To check if IP already exist
     firebase.database().ref(`kush-infotech`).orderByChild("IP").equalTo(IP).once("value", snapshot => {
         if (snapshot.exists()){
-           console.log("exists!");
+           console.log("IP already exists!");
          }
          else {
             firebase.database().ref('kush-infotech/Count').once('value', function(snapshot) {
@@ -106,25 +113,24 @@ firebase.initializeApp(firebaseConfig)
             
                 //To update count
                 firebase.database().ref('kush-infotech/Count').set(newCount).then(()=> {
-                    console.log("Inserted");
-                }).catch((error)=> {
-                    console.log(error);
-                });
+                    console.log("Count Inserted");
+                    
+                    // To insert data
 
-
-                // To insert data
-
-                firebase.database().ref('kush-infotech/' + newCount).set({
-                    id: newCount,
-                    IP: IP
-                }).then(()=> {
-                    console.log("Inserted");
+                    firebase.database().ref('kush-infotech/' + newCount).set({
+                        id: newCount,
+                        IP: IP
+                    }).then(()=> {
+                        console.log("Row Inserted");
+                    }).catch((error)=> {
+                        console.log(error);
+                    });
                 }).catch((error)=> {
                     console.log(error);
                 });
             });
-         }
-     });
+        }
+    });
 
 // =========================================================
 
