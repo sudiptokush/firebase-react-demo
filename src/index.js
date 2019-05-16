@@ -97,32 +97,28 @@ firebase.initializeApp(firebaseConfig);
 
 
 // Actual Code Implementation to check website visit by IP Address
-// =====================================================
+//=====================================================
 
-
-    //Get the IP address of the client
+    //Get IP address from client
     axios.get('http://api.ipstack.com/check?access_key=6ac02503c0ecd2aea73e20ec478a8d80')
         .then((res) => {
-                            let IP = (res.data.ip).toString();
+                            const IP = (res.data.ip).toString();
 
-                            //To check if IP already exist
-                            firebase.database().ref(`kush-infotech`).orderByChild("IP").equalTo(IP).once("value", snapshot => {
-                                if (snapshot.exists()){
-                                console.log("IP already exists!");
-                                }
-                                else {
-                                    firebase.database().ref('kush-infotech/Count').once('value', function(snapshot) {
-                                    
-                                        //To get the count value
-                                        const count = snapshot.val();
-                                        const newCount = count + 1;
-                                    
+                            // Get data from Kush Infotech
+                            firebase.database().ref(`kush-infotech`).once('value', (response) => {
+                                    const data = response.toJSON();
+                                    let count = data.Count;
+                                    const newCount = count + 1;
+                                    if(data[count].IP === IP)
+                                    {
+                                        console.log("IP already Exists")
+                                    }
+                                    else {
                                         //To update count
                                         firebase.database().ref('kush-infotech/Count').set(newCount).then(()=> {
                                             console.log("Count Inserted");
                                             
                                             // To insert data
-
                                             firebase.database().ref('kush-infotech/' + newCount).set({
                                                 id: newCount,
                                                 IP: IP
@@ -134,18 +130,18 @@ firebase.initializeApp(firebaseConfig);
                                         }).catch((error)=> {
                                             console.log(error);
                                         });
-                                    });
-                                }
+                                    }
                             });
                         })
         .catch(err => console.log(err));
+
 
 
 // =========================================================
 
     
 // firebase.database().ref('kush-infotech/Count').set(3).then(()=> {
-//     console.log("Inserted");
+//     console.log("Count Row Set");
 // }).catch((error)=> {
 //     console.log(error);
 // });
