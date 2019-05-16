@@ -109,10 +109,16 @@ firebase.initializeApp(firebaseConfig);
                                     const data = response.toJSON();
                                     let count = data.Count;
                                     const newCount = count + 1;
-                                    if(data[count].IP === IP)
+
+                                    // Stringify the json to check if IP present
+                                    let stringifiedData = JSON.stringify(data);
+
+                                    // If IP present
+                                    if(stringifiedData.includes(IP))
                                     {
                                         console.log("IP already Exists")
                                     }
+                                    // If IP not present 
                                     else {
                                         //To update count
                                         firebase.database().ref('kush-infotech/Count').set(newCount).then(()=> {
@@ -124,9 +130,7 @@ firebase.initializeApp(firebaseConfig);
                                                 IP: IP
                                             }).then(()=> {
                                                 console.log("Row Inserted");
-                                            }).catch((error)=> {
-                                                console.log(error);
-                                            });
+                                            })
                                         }).catch((error)=> {
                                             console.log(error);
                                         });
